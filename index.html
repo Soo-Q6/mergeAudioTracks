@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>screen capture with audio merging</title>
+</head>
+
+<body>
+    <video id="native-video"></video>
+</body>
+<script src="./merge.js"></script>
+<script>
+    (function() {
+        var chromeScreenContraints = {
+            video: true,
+            audio: true
+        }
+        navigator.mediaDevices.getDisplayMedia(chromeScreenContraints).then(function (userStream) {
+            navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            }).then(function (audioStream) {
+                console.log(userStream.getTracks(), audioStream.getTracks());
+                var stream = mergeTracks(userStream, audioStream);
+                console.log(stream.getTracks());
+                video = document.getElementById('native-video');
+                video.autoplay = true;
+                video.controls = true;
+                video.srcObject = stream;
+            })
+
+        }).catch(function (error) {
+            console.error("Access denied", error);
+            ee.emitEvent('access-denied', null);
+            alert(JSON.stringify(error, null, '\t'));
+        });
+    })()
+</script>
+
+</html>
